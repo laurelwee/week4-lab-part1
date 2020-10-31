@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
 ```
 
 ## 1. Confidence intervals
@@ -31,5 +32,58 @@ desert_bighorns <- c(32,44,18,26,50,33,42,20)
 sierra_bighorns <- c(28,31,40,42,26,29,31)
 
 t.test(x = desert_bighorns, y = sierra_bighorns)
+```
+## END PART 1
+
+## Part 2: Two- sample t-test
+
+```{r}
+compact_suv <- mpg %>% 
+  filter(class %in% c("compact","suv"))
+```
+
+### Exploratory data visualization
+
+Exploratory histogram:
+
+```{r}
+ggplot(data = compact_suv, aes(x = cty)) +
+  geom_histogram(bins = 15) +
+  facet_wrap(~class)
+```
+
+### Quantile-quantile
+
+```{r}
+ggplot(data = compact_suv, aes(sample = cty)) +
+  geom_qq() +
+  facet_wrap(~class)
+```
+### Descriptive statistics
+
+```{r}
+car_stats <- compact_suv %>% 
+  group_by(class) %>% 
+  summarize(mean_city = mean(cty),
+            sd_city = sd(cty),
+            n = n())
+
+car_stats
+```
+
+## 2-sample t-test
+
+Create vectors containing obsrvations for each sample (city gas milage)
+
+```{r}
+compact_sample <- compact_suv %>% 
+  filter(class == "compact") %>% 
+  pull(cty)
+
+suv_sample <- compact_suv %>% 
+  filter(class == "suv") %>% 
+  pull(cty)
+
+t.test(x = compact_sample, y = suv_sample)
 ```
 
